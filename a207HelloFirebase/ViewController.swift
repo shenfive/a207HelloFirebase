@@ -11,20 +11,36 @@ import FirebaseAuth
 
 class ViewController: UIViewController {
 
+    @IBOutlet weak var statusLabel: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        Auth.auth().signInAnonymously { (result, error) in
-            if error != nil{
-                print(error?.localizedDescription)
+        Auth.auth().addStateDidChangeListener { (auth, user) in
+            
+            if let currentUser = user{
+                self.statusLabel.text = "登入中：\(currentUser.uid)"
             }else{
-                print(result?.user.debugDescription)
+                self.statusLabel.text = "未登入"
             }
         }
         
         
+        
     }
-
-
+    @IBAction func logout(_ sender: Any) {
+        
+        do {
+            try Auth.auth().signOut()
+        } catch  {
+            print(error.localizedDescription)
+        }
+        
+        
+    }
+    
+    @IBAction func login(_ sender: Any) {
+        Auth.auth().signInAnonymously(completion: nil)
+    }
+    
 }
 
